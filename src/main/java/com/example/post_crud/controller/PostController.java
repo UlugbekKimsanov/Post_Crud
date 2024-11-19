@@ -19,6 +19,7 @@ public class PostController {
 
     @PostMapping("/create")
     public ResponseEntity<String> createPost(@RequestParam String text, Principal principal){
+        System.out.println("principal.getName() = " + principal.getName());
         return postService.create(text, UUID.fromString(principal.getName()));
     }
 

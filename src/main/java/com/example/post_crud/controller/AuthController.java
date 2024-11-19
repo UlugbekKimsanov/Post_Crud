@@ -21,14 +21,18 @@ public class AuthController {
     @PostMapping("/sign-in")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
         UserEntity user = userService.authenticateByEmailAndPassword(loginRequest.getEmail(), loginRequest.getPassword());
+        System.out.println("isuser = " + user);
         if (user == null) {
             return ResponseEntity.status(401).body(new AuthResponse("Invalid credentials", null, null));
         }
 
         String jwtToken = jwtTokenUtil.generateAccessToken(user.getId());
         String refreshToken = jwtTokenUtil.generateRefreshToken(user.getId());
-
-        return ResponseEntity.ok(new AuthResponse("Authentication successful", jwtToken, refreshToken));
+        System.out.println("jwtToken = " + jwtToken);
+        System.out.println("refreshToken = " + refreshToken);
+        AuthResponse authenticationSuccessful = new AuthResponse("Authentication successful", jwtToken, refreshToken);
+        System.out.println("authenticationSuccessful = " + authenticationSuccessful);
+        return ResponseEntity.ok(authenticationSuccessful);
     }
 
     @PostMapping("/sign-up")

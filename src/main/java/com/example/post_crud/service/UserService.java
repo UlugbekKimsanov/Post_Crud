@@ -20,6 +20,7 @@ public class UserService {
 
     public UserEntity authenticateByEmailAndPassword(String email, String password) {
         UserEntity user = userRepository.findByEmail(email);
+        System.out.println(user);
         if (!(user == null) && passwordEncoder.matches(password, user.getPassword())) {
             return user;
         }
