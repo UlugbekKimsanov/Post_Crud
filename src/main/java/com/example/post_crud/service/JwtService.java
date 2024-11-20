@@ -1,23 +1,21 @@
-package com.example.post_crud.config;
+package com.example.post_crud.service;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+import java.security.Key;
 import java.util.Date;
 import java.util.UUID;
 
-@Component
-public class JwtUtil {
-
+@Service
+public class JwtService {
     @Value("${jwt.secret}")
     private String JWT_SECRET;
-
     private static final long ACCESS_TOKEN_VALIDITY = 1000 * 60 * 60 * 24;
     private static final long REFRESH_TOKEN_VALIDITY = 1000 * 60 * 60 * 24 * 3;
-
 
     public String generateAccessToken(UUID userId) {
         return Jwts.builder()
@@ -28,7 +26,6 @@ public class JwtUtil {
                 .compact();
     }
 
-
     public String generateRefreshToken(UUID userId) {
         return Jwts.builder()
                 .setSubject(String.valueOf(userId))
@@ -38,19 +35,12 @@ public class JwtUtil {
                 .compact();
     }
 
-    public Claims getClaims(String token) {
-        return Jwts.parser()
+    public String validateTokenAndGetSubject(String token) {
+        return Jwts.parserBuilder()
                 .setSigningKey(JWT_SECRET)
+                .build()
                 .parseClaimsJws(token)
-                .getBody();
-    }
-
-    public boolean validateToken(String token) {
-        try {
-            getClaims(token);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+                .getBody()
+                .getSubject();
     }
 }

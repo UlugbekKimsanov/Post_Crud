@@ -1,7 +1,7 @@
 package com.example.post_crud.controller;
 
 import com.example.post_crud.dto.PostDto;
-import com.example.post_crud.entity.Post;
+import com.example.post_crud.dto.PostResponse;
 import com.example.post_crud.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +38,7 @@ public class PostController {
     }
 
     @GetMapping("/getMyPosts")
-    public ResponseEntity<List<Post>> getMyPosts(Principal principal){
+    public ResponseEntity<List<PostResponse>> getMyPosts(Principal principal){
         return postService.getMyPosts(UUID.fromString(principal.getName()));
     }
 

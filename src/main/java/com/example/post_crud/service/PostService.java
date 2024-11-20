@@ -1,18 +1,16 @@
 package com.example.post_crud.service;
 
 import com.example.post_crud.dto.PostDto;
+import com.example.post_crud.dto.PostResponse;
 import com.example.post_crud.entity.Post;
 import com.example.post_crud.entity.UserEntity;
 import com.example.post_crud.exception.DataNotFoundException;
 import com.example.post_crud.repository.PostRepository;
 import com.example.post_crud.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.context.config.ConfigDataNotFoundException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -25,9 +23,9 @@ public class PostService {
 
     public ResponseEntity<String> create(String text, UUID uuid) {
         UserEntity user = userRepository.findById(uuid)
-                .orElseThrow(() -> new DataNotFoundException("User not found!"));
+                .orElseThrow(() -> new DataNotFoundException("Foydalanuvchi topilmadi!"));
         postRepository.save(new Post(user,text));
-        return ResponseEntity.ok("Post created!");
+        return ResponseEntity.ok("Post yaratildi!");
     }
 
     public ResponseEntity<List<PostDto>> getAllPosts() {
@@ -42,26 +40,26 @@ public class PostService {
         return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<List<Post>> getMyPosts(UUID userId) {
+    public ResponseEntity<List<PostResponse>> getMyPosts(UUID userId) {
         return ResponseEntity.ok(postRepository.findPostsByOwnerId(userId));
     }
 
     public ResponseEntity<String> delete(UUID postId, UUID userId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new DataNotFoundException("Post not found!"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new DataNotFoundException("Post topilmadi!"));
         if(post.getOwner().getId().equals(userId)) {
             postRepository.delete(post);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Post deleted!");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Post o'chirildi!");
         }
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can't delete this post!");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Siz bu postni o'chira olmaysiz!");
     }
 
     public ResponseEntity<String> update(String text,UUID postId, UUID userId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new DataNotFoundException("Post not found!"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new DataNotFoundException("Post topilmadi!"));
         if(post.getOwner().getId().equals(userId)) {
             post.setPost(text);
             postRepository.save(post);
-            return ResponseEntity.ok().body("Post updated!");
+            return ResponseEntity.ok().body("Post yangilandi!");
         }
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can't update this post!");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Siz ushbu postni yangilay olmaysiz!");
     }
 }
